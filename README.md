@@ -30,7 +30,12 @@ println(t)
 Process finished with exit code 0
 ```
 
-## Resources / TODOs
+## Resources
 
 * https://github.com/vdmeer/asciitable
 * https://github.com/mipt-npm/kmath
+
+## TODOS
+
+* figure out how to run tests against github actions
+* write more tests
