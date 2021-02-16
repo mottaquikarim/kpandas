@@ -22,6 +22,23 @@ class Series<out P>(val data: MutableList<Int?>? = null, private var index: List
     }
 
     override fun toString(): String {
+        val builder = StringBuilder()
+        if (name != "") {
+            builder.append("\t")
+            builder.append(name)
+        }
+        for (i in 0 until len) {
+            builder.append("\n")
+            var dataVal = if (data?.get(i) == null) "nan" else data?.get(i)
+            builder.append(index?.get(i) ?: i)
+            builder.append("\t")
+            builder.append(dataVal)
+        }
+        builder.append("\n")
+        return builder.toString()
+    }
+
+    fun toTable(): String {
         val at = AsciiTable()
         if (name != "") {
             at.addRule();
