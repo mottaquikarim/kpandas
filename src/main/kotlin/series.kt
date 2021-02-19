@@ -5,8 +5,24 @@ import java.lang.Exception
 // inspired by:
 // https://github.com/Kotlin/kotlin-numpy/blob/master/src/main/kotlin/org/jetbrains/numkt/math/ArithmeticOperators.kt
 class DType<R: Any>(val data: Any?) {
-    operator fun plus(element: DType<Any>): R? {
+    private fun applyOp(element: DType<Any>, cb: (data: Any?, element: DType<Any>) -> R?): R? {
         if (data == null) {
+            return null
+        }
+        return when(data) {
+            is Int -> {
+                when (element.data) {
+                    is Long -> cb(data, element)
+                    is Float -> cb(data, element)
+                    is Int -> cb(data, element)
+                    else -> throw Exception("Cannot add Int with non numeric type")
+                }
+            }
+            else -> throw Exception("Cannot add unrecognized type")
+        }
+    }
+    operator fun plus(element: DType<Any>): R? {
+                if (data == null) {
             return null
         }
         return when(data) {
@@ -15,6 +31,38 @@ class DType<R: Any>(val data: Any?) {
                     is Long -> (data + element.data) as R
                     is Float -> (data + element.data) as R
                     is Int -> (data + element.data) as R
+                    else -> throw Exception("Cannot add Int with non numeric type")
+                }
+            }
+            else -> throw Exception("Cannot add unrecognized type")
+        }
+    }
+//    operator fun plus(element: DType<Any>): R? {
+//        if (data == null) {
+//            return null
+//        }
+//        return when(data) {
+//            is Int -> {
+//                when (element.data) {
+//                    is Long -> (data + element.data) as R
+//                    is Float -> (data + element.data) as R
+//                    is Int -> (data + element.data) as R
+//                    else -> throw Exception("Cannot add Int with non numeric type")
+//                }
+//            }
+//            else -> throw Exception("Cannot add unrecognized type")
+//        }
+//    }
+    operator fun times(element: DType<Any>): R? {
+        if (data == null) {
+            return null
+        }
+        return when(data) {
+            is Int -> {
+                when (element.data) {
+                    is Long -> (data * element.data) as R
+                    is Float -> (data * element.data) as R
+                    is Int -> (data * element.data) as R
                     else -> throw Exception("Cannot add Int with non numeric type")
                 }
             }
@@ -41,6 +89,16 @@ class NDArray<T>(x: MutableList<T?>? = null) {
         }
         return nd
     }
+    operator fun T.times(element: DType<Any>): T {
+        return (DType<Any>(this) * element) as T
+    }
+    operator fun times(other: DType<Any>): NDArray<T> {
+        val nd = NDArray<T>()
+        for (i in values.indices) {
+            nd.add(this.values[i] * other)
+        }
+        return nd
+    }
     operator fun get(x: Int) = values[x]
     operator fun set(x: Int, value: T) = run { values[x] = value }
 }
@@ -55,6 +113,12 @@ class Series<T, U>(var data: NDArray<T?>? = null, private var index: NDArray<U>?
     operator fun plus(other: T): Series<T, U> {
         val t = Series(data, index = index, name = name)
         t.data = data?.plus(DType(other))
+        return t
+    }
+
+    operator fun times(other: T): Series<T, U> {
+        val t = Series(data, index = index, name = name)
+        t.data = data?.times(DType(other))
         return t
     }
 
