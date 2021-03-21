@@ -20,4 +20,5 @@ fun main() {
     println(s1)
     println(s1.eq(5))
     println(s1.neq(5))
+    println(s1.ge(5.toInt()))
 }

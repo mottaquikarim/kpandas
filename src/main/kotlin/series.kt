@@ -33,6 +33,16 @@ class Series<T, U>(
     }
     fun eq(other: T): Series<Boolean, U> = applyCmp(other) { a, i -> data[i] == other }
     fun neq(other: T): Series<Boolean, U> = applyCmp(other) { a, i -> data[i] != other }
+    fun ge(other: T): Series<Boolean, U> {
+        var t = mutableListOf<Boolean>()
+        for (i in 0..data.data.size - 1) {
+            println(data[i])
+            println(other)
+//            println(data[i].compareTo(other))
+        }
+
+        return Series(BooleanNDArray(t.toList()), index = index, name = name)
+    }
 
     override fun toString(): String {
         val builder = StringBuilder()
